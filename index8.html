@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timer with Notification</title>
+</head>
+<body>
+
+<div>
+  <label for="minutes1">Timer 1 (Minutes):</label>
+  <input type="number" id="minutes1" min="0" value="60">
+</div>
+
+<div>
+  <label for="minutes2">Timer 2 (Minutes):</label>
+  <input type="number" id="minutes2" min="0" value="80">
+</div>
+
+<div>
+  <label for="minutes3">Timer 3 (Minutes):</label>
+  <input type="number" id="minutes3" min="0" value="90">
+</div>
+
+<div>
+  <label for="minutes4">Timer 4 (Minutes):</label>
+  <input type="number" id="minutes4" min="0" value="0">
+</div>
+
+<div>
+  <button id="startButton1">Start Timer 1</button>
+  <button id="stopButton1" disabled>Stop Timer 1</button>
+</div>
+
+<div>
+  <button id="startButton2">Start Timer 2</button>
+  <button id="stopButton2" disabled>Stop Timer 2</button>
+</div>
+
+<div>
+  <button id="startButton3">Start Timer 3</button>
+  <button id="stopButton3" disabled>Stop Timer 3</button>
+</div>
+
+<div>
+  <button id="startButton4">Start Timer 4</button>
+  <button id="stopButton4" disabled>Stop Timer 4</button>
+</div>
+
+<div id="timeLeft1"></div>
+<div id="timeLeft2"></div>
+<div id="timeLeft3"></div>
+<div id="timeLeft4"></div>
+
+<script>
+
+let timerInterval; // Define timerInterval
+
+const timerData = [
+  { minutesInputId: 'minutes1', startButtonId: 'startButton1', stopButtonId: 'stopButton1', timeLeftId: 'timeLeft1' },
+  { minutesInputId: 'minutes2', startButtonId: 'startButton2', stopButtonId: 'stopButton2', timeLeftId: 'timeLeft2' },
+  { minutesInputId: 'minutes3', startButtonId: 'startButton3', stopButtonId: 'stopButton3', timeLeftId: 'timeLeft3' },
+  { minutesInputId: 'minutes4', startButtonId: 'startButton4', stopButtonId: 'stopButton4', timeLeftId: 'timeLeft4' }
+];
+
+timerData.forEach(data => {
+  const minutesInput = document.getElementById(data.minutesInputId);
+  const startButton = document.getElementById(data.startButtonId);
+  const stopButton = document.getElementById(data.stopButtonId);
+  const timeLeftDisplay = document.getElementById(data.timeLeftId);
+
+  startButton.addEventListener('click', () => startTimer(minutesInput, startButton, stopButton, timeLeftDisplay));
+  stopButton.addEventListener('click', () => stopTimer(stopButton, startButton));
+
+});
+
+function startTimer(minutesInput, startButton, stopButton, timeLeftDisplay) {
+  const minutes = parseInt(minutesInput.value);
+  const seconds = minutes * 60;
+  let timer = seconds;
+  
+  displayTimeLeft(timeLeftDisplay, timer);
+
+  timerInterval = setInterval(function() {
+    timer--;
+    displayTimeLeft(timeLeftDisplay, timer);
+    if (timer === 0) {
+      clearInterval(timerInterval);
+      notifyUser(`Time's up! ${minutes} minutes is over.`);
+      startButton.disabled = false;
+      stopButton.disabled = true;
+    }
+  }, 1000);
+
+  startButton.disabled = true;
+  stopButton.disabled = false;
+}
+
+function stopTimer(stopButton, startButton) {
+  clearInterval(timerInterval);
+  startButton.disabled = false;
+  stopButton.disabled = true;
+}
+
+function displayTimeLeft(timeLeftDisplay, seconds) {
+  const minutesLeft = Math.floor(seconds / 60);
+  const secondsLeft = seconds % 60;
+  const display = `${minutesLeft}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+  timeLeftDisplay.textContent = display;
+}
+
+function notifyUser(message) {
+  if (!("Notification" in window)) {
+    alert("This browser does not support desktop notification");
+  } else if (Notification.permission === "granted") {
+    new Notification(message);
+  } else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then(function (permission) {
+      if (permission === "granted") {
+        new Notification(message);
+      }
+    });
+  }
+}
+</script>
+
+</body>
+</html>
