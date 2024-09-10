@@ -1,4 +1,4 @@
-![Stars](https://img.shields.io/github/stars/larymak/Python-project-Scripts)
+![Bintang](https://img.shields.io/github/stars/larymak/Python-project-Scripts)
 
 # Website of this repo:
 
